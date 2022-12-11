@@ -1,8 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { CreateUserDto } from './dto/createUser.dto';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { PrismaService } from 'nestjs-prisma';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -41,7 +42,49 @@ export class UsersService {
         };
     }
 
-    async getById(id: number) {
+    public async setCurrentRefreshToken(refreshToken: string, userId: number) {
+        const currentHashedRefreshToken = await hash(refreshToken, 10);
+
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                currentHashedRefreshToken,
+            },
+        });
+    }
+
+    async getUserIfRefreshTokenMatches(
+        refreshToken: string,
+        userId: number,
+    ): Promise<UserDto> {
+        console.log('refresh token', {
+            refreshToken,
+            userId,
+        });
+        const user = await this.getById(userId);
+
+        const isRefreshTokenMatches = await compare(
+            refreshToken,
+            user.currentHashedRefreshToken,
+        );
+
+        if (isRefreshTokenMatches) {
+            return user;
+        }
+    }
+
+    async removeRefreshToken(userId: number) {
+        return this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                currentHashedRefreshToken: null,
+            },
+        });
+    }
+
+    async getById(id: number): Promise<UserDto> {
         const user = await this.prisma.user.findFirst({
             where: {
                 id,

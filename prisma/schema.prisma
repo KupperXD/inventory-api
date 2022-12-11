@@ -11,8 +11,15 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
-  name  String
-  password String
+    id                           Int       @default(autoincrement()) @id
+    email                        String    @unique
+    name                         String
+    password                     String
+    currentHashedRefreshToken    String?
+}
+
+model Employee {
+    id    Int      @default(autoincrement()) @id
+    email String   @unique
+    name  String
 }

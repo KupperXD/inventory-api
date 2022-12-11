@@ -5,7 +5,9 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { UsersModule } from '../users/users.module';
 import { PrismaModule } from 'nestjs-prisma';
-import {AuthModule} from "../auth/auth.module";
+import { AuthModule } from '../auth/auth.module';
+import { EmployeeModule } from '../employee/employee.module';
+import { UniqueConstraintValidator } from '../../validators/unique-constraint.validator';
 
 @Module({
     imports: [
@@ -18,8 +20,9 @@ import {AuthModule} from "../auth/auth.module";
         }),
         UsersModule,
         AuthModule,
+        EmployeeModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, UniqueConstraintValidator],
 })
 export class AppModule {}

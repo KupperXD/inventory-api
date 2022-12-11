@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { ValidationException } from './http/errors/exceptions/validation.exception';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -16,6 +17,8 @@ async function bootstrap() {
             exceptionFactory: (errors) => new ValidationException(errors),
         }),
     );
+
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.listen(configService.get('port'));
 }
 void bootstrap();

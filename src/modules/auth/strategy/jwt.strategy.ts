@@ -12,13 +12,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private configService: ConfigService,
         private userService: UsersService,
     ) {
+        console.log(configService);
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request: Request) => {
                     return request?.cookies?.Authentication;
                 },
             ]),
-            secretOrKey: configService.get('jwt_secret'),
+            secretOrKey: configService.get('jwt_access_secret'),
         });
     }
 

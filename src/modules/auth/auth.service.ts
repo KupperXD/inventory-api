@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/tokenPayload.interface';
 import LoginDto from './dto/login.dto';
+import { UserDto } from '../users/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,28 +20,48 @@ export class AuthService {
         const token = this.jwtService.sign(payload);
 
         return {
-            token,
             cookie: `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-                'jwt_expiration_time',
+                'jwt_access_expiration_time',
             )}`,
         };
     }
 
-    public async getAuthenticatedUser(loginDto: LoginDto) {
+    public getCookieWithJwtRefreshToken(userId: number) {
+        const payload: TokenPayload = { userId };
+        const token = this.jwtService.sign(payload, {
+            secret: this.configService.get('jwt_refresh_secret'),
+            expiresIn: this.configService.get('jwt_refresh_expiration_time'),
+        });
+
+        return {
+            cookie: `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+                'jwt_refresh_expiration_time',
+            )}`,
+            token,
+        };
+    }
+
+    public async getAuthenticatedUser(loginDto: LoginDto): Promise<UserDto> {
         try {
             const user = await this.userService.getByEmail(loginDto.email);
-            console.log('user getAuthenticatedUser', {
-                user,
-            });
+
             await this.verifyPassword(loginDto.password, user.password);
-            user.password = null;
+
             return user;
         } catch (error) {
+            console.log(error);
             throw new HttpException(
                 'Wrong credentials provided',
                 HttpStatus.BAD_REQUEST,
             );
         }
+    }
+
+    public async getCookieForLogOut() {
+        return [
+            'Authentication=; HttpOnly; Path=/; Max-Age=0',
+            'Refresh=; HttpOnly; Path=/; Max-Age=0',
+        ];
     }
 
     private async verifyPassword(plainTextPassword: string, hashedPassword) {

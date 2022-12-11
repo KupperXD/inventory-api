@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './controllers/auth.controller';
 import { JwtStrategy } from './strategy/jwt.strategy';
-import { LocalStrategy } from './strategy/local.strategy';
+import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
 
 @Module({
     controllers: [AuthController],
@@ -18,16 +18,16 @@ import { LocalStrategy } from './strategy/local.strategy';
             inject: [ConfigService],
             useFactory: async (configService: ConfigService) => {
                 return {
-                    secret: configService.get('jwt_secret'),
+                    secret: configService.get('jwt_access_secret'),
                     signOptions: {
                         expiresIn: `${configService.get(
-                            'jwt_expiration_time',
+                            'jwt_access_expiration_time',
                         )}s`,
                     },
                 };
             },
         }),
     ],
-    providers: [AuthService, LocalStrategy, JwtStrategy],
+    providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
 })
 export class AuthModule {}
