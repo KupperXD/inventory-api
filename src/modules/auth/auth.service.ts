@@ -20,7 +20,7 @@ export class AuthService {
         const token = this.jwtService.sign(payload);
 
         return {
-            cookie: `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+            cookie: `Authentication=${token}; Path=/; Max-Age=${this.configService.get(
                 'jwt_access_expiration_time',
             )}`,
         };
@@ -34,7 +34,7 @@ export class AuthService {
         });
 
         return {
-            cookie: `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+            cookie: `Refresh=${token}; Path=/; Max-Age=${this.configService.get(
                 'jwt_refresh_expiration_time',
             )}`,
             token,
@@ -49,7 +49,6 @@ export class AuthService {
 
             return user;
         } catch (error) {
-            console.log(error);
             throw new HttpException(
                 'Wrong credentials provided',
                 HttpStatus.BAD_REQUEST,

@@ -4,7 +4,7 @@ import { ValidationError } from 'class-validator';
 class ErrorHelper {
     static mapError(error: ValidationError): ErrorInterface {
         return {
-            properties: [error.property],
+            properties: error.property,
             errors: error.constraints,
             nested: error.children.map(ErrorHelper.mapError),
         };

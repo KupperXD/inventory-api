@@ -19,6 +19,6 @@ async function bootstrap() {
     );
 
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    await app.listen(configService.get('port'));
+    await app.listen(configService.get('application_port'));
 }
 void bootstrap();

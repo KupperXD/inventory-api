@@ -8,6 +8,7 @@ import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from '../auth/auth.module';
 import { EmployeeModule } from '../employee/employee.module';
 import { UniqueConstraintValidator } from '../../validators/unique-constraint.validator';
+import { CreateUserCommand } from 'src/console/create-user.command';
 
 @Module({
     imports: [
@@ -23,6 +24,6 @@ import { UniqueConstraintValidator } from '../../validators/unique-constraint.va
         EmployeeModule,
     ],
     controllers: [AppController],
-    providers: [AppService, UniqueConstraintValidator],
+    providers: [AppService, UniqueConstraintValidator, CreateUserCommand],
 })
 export class AppModule {}

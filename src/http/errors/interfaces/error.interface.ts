@@ -1,5 +1,5 @@
 export interface ErrorInterface {
-    properties: string[];
+    properties: string;
     errors: Record<string, string>;
     nested: ErrorInterface[];
 }

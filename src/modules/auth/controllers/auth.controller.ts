@@ -19,13 +19,16 @@ import { UserWithoutPasswordDto } from '../../users/dto/userWithoutPassword.dto'
 import { plainToClass } from 'class-transformer';
 import JwtRefreshGuard from '../guards/jwt-refresh.guard';
 import { UsersService } from '../../users/users.service';
+import ApiController from '../../../http/controllers/api.controller';
 
 @Controller('auth')
-export class AuthController {
+export class AuthController extends ApiController {
     constructor(
         private authService: AuthService,
         private userService: UsersService,
-    ) {}
+    ) {
+        super();
+    }
 
     @Post('log-in')
     @HttpCode(200)
@@ -46,7 +49,9 @@ export class AuthController {
                 user.id,
             );
 
-            return response.send(plainToClass(UserWithoutPasswordDto, user));
+            return response.send(
+                this.wrapResponse(plainToClass(UserWithoutPasswordDto, user)),
+            );
         } catch (e) {
             throw new HttpException(
                 'Wrong credentials provided',
@@ -62,6 +67,8 @@ export class AuthController {
         await this.userService.removeRefreshToken(request.user.id);
         const cookieForLogOut = await this.authService.getCookieForLogOut();
         request.res.setHeader('Set-Cookie', cookieForLogOut);
+
+        return this.wrapResponse({ success: true });
     }
 
     @UseGuards(JwtRefreshGuard)
@@ -74,7 +81,9 @@ export class AuthController {
         response.setHeader('Set-Cookie', accessToken.cookie);
 
         return response.send(
-            plainToClass(UserWithoutPasswordDto, request.user),
+            this.wrapResponse(
+                plainToClass(UserWithoutPasswordDto, request.user),
+            ),
         );
     }
 
@@ -83,9 +92,9 @@ export class AuthController {
     @HttpCode(200)
     async currentUser(
         @Req() request: RequestWithUser,
-    ): Promise<UserWithoutPasswordDto> {
+    ): Promise<ResponseInterface<UserWithoutPasswordDto>> {
         const user = request.user;
 
-        return plainToClass(UserWithoutPasswordDto, user);
+        return this.wrapResponse(plainToClass(UserWithoutPasswordDto, user));
     }
 }
