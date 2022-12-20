@@ -4,7 +4,7 @@ import { UpdateEmployeeDto } from '../dto/update-employee.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaError } from '../../../enums/prismaError';
-import { EntityNotFoundException } from '../../../http/errors/exceptions/entity-not-found.exception';
+import { EntityNotFoundException } from '../../../exceptions/entity-not-found.exception';
 
 @Injectable()
 export class EmployeeService {

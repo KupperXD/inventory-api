@@ -4,6 +4,8 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { compare, hash } from 'bcrypt';
 import { PrismaService } from 'nestjs-prisma';
 import { UserDto } from './dto/user.dto';
+import ApiServiceException from '../../exceptions/api-service.exception';
+import EntityNotFoundError from '../../http/errors/entity-not-found.error';
 
 @Injectable()
 export class UsersService {
@@ -16,14 +18,11 @@ export class UsersService {
             },
         });
 
-        if (user) {
-            return user;
+        if (!user) {
+            throw new ApiServiceException(new EntityNotFoundError());
         }
 
-        throw new HttpException(
-            'User with this email does not exist',
-            HttpStatus.NOT_FOUND,
-        );
+        return user;
     }
 
     public async create(userData: CreateUserDto) {
@@ -59,10 +58,6 @@ export class UsersService {
         refreshToken: string,
         userId: number,
     ): Promise<UserDto> {
-        console.log('refresh token', {
-            refreshToken,
-            userId,
-        });
         const user = await this.getById(userId);
 
         const isRefreshTokenMatches = await compare(
@@ -91,13 +86,10 @@ export class UsersService {
             },
         });
 
-        if (user) {
-            return user;
+        if (!user) {
+            throw new ApiServiceException(new EntityNotFoundError());
         }
 
-        throw new HttpException(
-            'User with this id does not exist',
-            HttpStatus.NOT_FOUND,
-        );
+        return user;
     }
 }

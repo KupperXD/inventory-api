@@ -3,7 +3,7 @@ import { AppModule } from './modules/app/app.module';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
-import { ValidationException } from './http/errors/exceptions/validation.exception';
+import { ValidationException } from './exceptions/validation.exception';
 import { useContainer } from 'class-validator';
 
 async function bootstrap() {

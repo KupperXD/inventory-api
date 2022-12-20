@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/tokenPayload.interface';
 import LoginDto from './dto/login.dto';
 import { UserDto } from '../users/dto/user.dto';
+import ApiServiceException from '../../exceptions/api-service.exception';
+import LoginFailedError from './errors/login-failed.error';
 
 @Injectable()
 export class AuthService {
@@ -49,10 +51,7 @@ export class AuthService {
 
             return user;
         } catch (error) {
-            throw new HttpException(
-                'Wrong credentials provided',
-                HttpStatus.BAD_REQUEST,
-            );
+            this.throwLoginFailedError();
         }
     }
 
@@ -70,10 +69,11 @@ export class AuthService {
         );
 
         if (!isPasswordMatching) {
-            throw new HttpException(
-                'Wrong credentials provided',
-                HttpStatus.BAD_REQUEST,
-            );
+            this.throwLoginFailedError();
         }
+    }
+
+    private throwLoginFailedError(): void {
+        throw new ApiServiceException(new LoginFailedError());
     }
 }

@@ -3,8 +3,6 @@ import {
     Controller,
     Get,
     HttpCode,
-    HttpException,
-    HttpStatus,
     Post,
     Req,
     Res,
@@ -20,6 +18,7 @@ import { plainToClass } from 'class-transformer';
 import JwtRefreshGuard from '../guards/jwt-refresh.guard';
 import { UsersService } from '../../users/users.service';
 import ApiController from '../../../http/controllers/api.controller';
+import ApiServiceException from '../../../exceptions/api-service.exception';
 
 @Controller('auth')
 export class AuthController extends ApiController {
@@ -53,10 +52,9 @@ export class AuthController extends ApiController {
                 this.wrapResponse(plainToClass(UserWithoutPasswordDto, user)),
             );
         } catch (e) {
-            throw new HttpException(
-                'Wrong credentials provided',
-                HttpStatus.BAD_REQUEST,
-            );
+            const error = e as ApiServiceException;
+
+            return response.send(this.wrapError(error.getApiError()));
         }
     }
 
