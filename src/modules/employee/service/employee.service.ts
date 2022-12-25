@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmployeeDto } from '../dto/update-employee.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { PrismaError } from '../../../enums/prismaError';
-import { EntityNotFoundException } from '../../../exceptions/entity-not-found.exception';
+import ApiServiceException from '../../../exceptions/api-service.exception';
+import EntityNotFoundError from '../../../http/errors/entity-not-found.error';
 
 @Injectable()
 export class EmployeeService {
@@ -17,7 +16,7 @@ export class EmployeeService {
     }
 
     async findAll() {
-        const employees = this.prisma.employee.findMany();
+        const employees = await this.prisma.employee.findMany();
 
         return employees;
     }
@@ -30,33 +29,24 @@ export class EmployeeService {
         });
 
         if (!employee) {
-            throw new EntityNotFoundException(id);
+            throw new ApiServiceException(new EntityNotFoundError());
         }
 
         return employee;
     }
 
     async update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
-        try {
-            return await this.prisma.employee.update({
-                data: {
-                    ...updateEmployeeDto,
-                    id: undefined,
-                },
-                where: {
-                    id,
-                },
-            });
-        } catch (error) {
-            if (
-                error instanceof PrismaClientKnownRequestError &&
-                error.code === PrismaError.RecordDoesNotExist
-            ) {
-                throw new EntityNotFoundException(id);
-            }
+        const model = await this.findOne(id);
 
-            throw error;
-        }
+        return await this.prisma.employee.update({
+            data: {
+                ...model,
+                ...updateEmployeeDto,
+            },
+            where: {
+                id,
+            },
+        });
     }
 
     remove(id: number) {

@@ -6,40 +6,66 @@ import {
     Patch,
     Param,
     Delete,
-    UseGuards,
 } from '@nestjs/common';
 import { EmployeeService } from '../service/employee.service';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmployeeDto } from '../dto/update-employee.dto';
 import { EmployeeDto } from '../dto/employee-dto';
-import JwtAuthenticationGuard from '../../auth/guards/jwt-authentication.guard';
+import { WithAuthGuardController } from '../../../http/controllers/with-auth-guard.controller';
+import { PaginatedCollectionDto } from '../../../http/dto/paginated-collection.dto';
+import ApiServiceException from '../../../exceptions/api-service.exception';
 
 @Controller('employee')
-export class EmployeeController {
-    constructor(private readonly employeeService: EmployeeService) {}
-
-    @Post()
-    create(@Body() createEmployeeDto: CreateEmployeeDto): Promise<EmployeeDto> {
-        return this.employeeService.create(createEmployeeDto);
+export class EmployeeController extends WithAuthGuardController {
+    constructor(private readonly employeeService: EmployeeService) {
+        super();
     }
 
-    @UseGuards(JwtAuthenticationGuard)
+    @Post()
+    async create(@Body() createEmployeeDto: CreateEmployeeDto) {
+        const employee = await this.employeeService.create(createEmployeeDto);
+
+        return this.wrapResponse(employee);
+    }
+
     @Get()
-    findAll(): Promise<EmployeeDto[]> {
-        return this.employeeService.findAll();
+    async findAll(): Promise<
+        ResponseInterface<PaginatedCollectionDto<EmployeeDto>>
+    > {
+        const result = await this.employeeService.findAll();
+        return this.wrapResponse(
+            new PaginatedCollectionDto<EmployeeDto>(result),
+        );
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string): Promise<EmployeeDto> {
-        return this.employeeService.findOne(+id);
+    async findOne(
+        @Param('id') id: string,
+    ): Promise<ResponseInterface<EmployeeDto>> {
+        const result = await this.employeeService.findOne(+id);
+
+        return this.wrapResponse(result);
     }
 
     @Patch(':id')
-    update(
+    async update(
         @Param('id') id: string,
         @Body() updateEmployeeDto: UpdateEmployeeDto,
     ) {
-        return this.employeeService.update(+id, updateEmployeeDto);
+        try {
+            const result = await this.employeeService.update(
+                +id,
+                updateEmployeeDto,
+            );
+            return this.wrapResponse(result);
+        } catch (e) {
+            if (e instanceof ApiServiceException) {
+                const err = e as ApiServiceException;
+                return this.wrapError(err.getApiError());
+            }
+
+            throw e;
+        }
     }
 
     @Delete(':id')
