@@ -14,6 +14,7 @@ import { EmployeeDto } from '../dto/employee-dto';
 import { WithAuthGuardController } from '../../../http/controllers/with-auth-guard.controller';
 import { PaginatedCollectionDto } from '../../../http/dto/paginated-collection.dto';
 import ApiServiceException from '../../../exceptions/api-service.exception';
+import { ErrorResponseInterface } from '../../../http/errors/interfaces/error-response.interface';
 
 @Controller('employee')
 export class EmployeeController extends WithAuthGuardController {
@@ -41,10 +42,16 @@ export class EmployeeController extends WithAuthGuardController {
     @Get(':id')
     async findOne(
         @Param('id') id: string,
-    ): Promise<ResponseInterface<EmployeeDto>> {
-        const result = await this.employeeService.findOne(+id);
+    ): Promise<ResponseInterface<EmployeeDto> | ErrorResponseInterface> {
+        try {
+            const result = await this.employeeService.findOne(Number(id));
 
-        return this.wrapResponse(result);
+            return this.wrapResponse(result);
+        } catch (e) {
+            const err = e as ApiServiceException;
+
+            return this.wrapError(err.getApiError());
+        }
     }
 
     @Patch(':id')
@@ -54,7 +61,7 @@ export class EmployeeController extends WithAuthGuardController {
     ) {
         try {
             const result = await this.employeeService.update(
-                +id,
+                Number(id),
                 updateEmployeeDto,
             );
             return this.wrapResponse(result);
@@ -69,7 +76,13 @@ export class EmployeeController extends WithAuthGuardController {
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.employeeService.remove(+id);
+    async remove(@Param('id') id: string) {
+        try {
+            await this.employeeService.remove(Number(id));
+            return this.wrapResponse('Сущность удалена');
+        } catch (e) {
+            const err = e as ApiServiceException;
+            return this.wrapError(err.getApiError());
+        }
     }
 }

@@ -13,10 +13,10 @@ import { AuthService } from '../auth.service';
 import { RequestWithUser } from '../interfaces/requestWithUser.interface';
 import LoginDto from '../dto/login.dto';
 import JwtAuthenticationGuard from '../guards/jwt-authentication.guard';
-import { UserWithoutPasswordDto } from '../../users/dto/userWithoutPassword.dto';
+import { UserWithoutPasswordDto } from '../../users/dto/user-without-password.dto';
 import { plainToClass } from 'class-transformer';
 import JwtRefreshGuard from '../guards/jwt-refresh.guard';
-import { UsersService } from '../../users/users.service';
+import { UsersService } from '../../users/service/users.service';
 import ApiController from '../../../http/controllers/api.controller';
 import ApiServiceException from '../../../exceptions/api-service.exception';
 

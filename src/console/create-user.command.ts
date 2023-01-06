@@ -1,5 +1,5 @@
 import { CommandRunner, Command, Option } from 'nest-commander';
-import { UsersService } from '../modules/users/users.service';
+import { UsersService } from '../modules/users/service/users.service';
 
 interface CreateUserOptions {
     email: string;

@@ -16,7 +16,7 @@ export class UniqueConstraintValidator implements ValidatorConstraintInterface {
     async validate(value: any, args?: ValidationArguments): Promise<boolean> {
         const [model, property = 'id', exceptField = null] = args.constraints;
 
-        if (!value && !model) {
+        if (!value || !model) {
             return false;
         }
 

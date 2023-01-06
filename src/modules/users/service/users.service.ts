@@ -1,22 +1,18 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { CreateUserDto } from './dto/createUser.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { compare, hash } from 'bcrypt';
-import { PrismaService } from 'nestjs-prisma';
-import { UserDto } from './dto/user.dto';
-import ApiServiceException from '../../exceptions/api-service.exception';
-import EntityNotFoundError from '../../http/errors/entity-not-found.error';
+import { UserDto } from '../dto/user.dto';
+import ApiServiceException from '../../../exceptions/api-service.exception';
+import EntityNotFoundError from '../../../http/errors/entity-not-found.error';
+import UserRepository from '../repository/user.repository';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private userRepository: UserRepository) {}
 
     public async getByEmail(email: string): Promise<User | null> {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email,
-            },
-        });
+        const user = await this.userRepository.findByEmail(email);
 
         if (!user) {
             throw new ApiServiceException(new EntityNotFoundError());
@@ -28,11 +24,9 @@ export class UsersService {
     public async create(userData: CreateUserDto) {
         const passwordHash = await hash(userData.password, 10);
 
-        const createdUser = await this.prisma.user.create({
-            data: {
-                ...userData,
-                password: passwordHash,
-            },
+        const createdUser = await this.userRepository.create({
+            ...userData,
+            password: passwordHash,
         });
 
         return {
@@ -44,13 +38,8 @@ export class UsersService {
     public async setCurrentRefreshToken(refreshToken: string, userId: number) {
         const currentHashedRefreshToken = await hash(refreshToken, 10);
 
-        await this.prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                currentHashedRefreshToken,
-            },
+        await this.userRepository.update(userId, {
+            currentHashedRefreshToken,
         });
     }
 
@@ -71,20 +60,13 @@ export class UsersService {
     }
 
     async removeRefreshToken(userId: number) {
-        return this.prisma.user.update({
-            where: { id: userId },
-            data: {
-                currentHashedRefreshToken: null,
-            },
+        return this.userRepository.update(userId, {
+            currentHashedRefreshToken: null,
         });
     }
 
     async getById(id: number): Promise<UserDto> {
-        const user = await this.prisma.user.findFirst({
-            where: {
-                id,
-            },
-        });
+        const user = await this.userRepository.findOne(id);
 
         if (!user) {
             throw new ApiServiceException(new EntityNotFoundError());
