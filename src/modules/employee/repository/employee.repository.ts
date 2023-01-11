@@ -1,14 +1,16 @@
-import { BaseRepository } from '../../../components/base.repository';
-import { Employee } from '@prisma/client';
+import { Prisma, Employee } from '@prisma/client';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { UpdateEmployeeDto } from '../dto/update-employee.dto';
+import { PaginationRepository } from '../../../components/pagination/pagination.repository';
 
 @Injectable()
-export class EmployeeRepository extends BaseRepository<Employee> {
+export class EmployeeRepository extends PaginationRepository<Employee> {
+
+
     constructor(private readonly prisma: PrismaService) {
-        super();
+        super(prisma.employee);
     }
 
     async create(dto: CreateEmployeeDto): Promise<Employee> {
@@ -44,7 +46,9 @@ export class EmployeeRepository extends BaseRepository<Employee> {
         });
     }
 
-    async findAll(): Promise<Employee[]> {
-        return this.prisma.employee.findMany();
+    async findAll(options?: Prisma.EmployeeWhereInput): Promise<Employee[]> {
+        return this.prisma.employee.findMany({
+            where: options,
+        });
     }
 }

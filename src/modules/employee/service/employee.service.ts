@@ -7,14 +7,19 @@ import { EmployeeRepository } from '../repository/employee.repository';
 
 @Injectable()
 export class EmployeeService {
+    private readonly PER_PAGE = 20;
+
     constructor(private readonly employeeRepository: EmployeeRepository) {}
 
     async create(createEmployeeDto: CreateEmployeeDto) {
         return await this.employeeRepository.create(createEmployeeDto);
     }
 
-    async findAll() {
-        return await this.employeeRepository.findAll();
+    async findAllPaginated(page: number) {
+        return await this.employeeRepository.paginate({
+            page,
+            perPage: this.PER_PAGE,
+        });
     }
 
     async findOne(id: number) {

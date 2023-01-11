@@ -6,6 +6,8 @@ import {
     Patch,
     Param,
     Delete,
+    Query,
+    ValidationPipe,
 } from '@nestjs/common';
 import { EmployeeService } from '../service/employee.service';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
@@ -15,6 +17,8 @@ import { WithAuthGuardController } from '../../../http/controllers/with-auth-gua
 import { PaginatedCollectionDto } from '../../../http/dto/paginated-collection.dto';
 import ApiServiceException from '../../../exceptions/api-service.exception';
 import { ErrorResponseInterface } from '../../../http/errors/interfaces/error-response.interface';
+import { plainToClass } from 'class-transformer';
+import { PaginatedQueryDto } from '../../../http/dto/paginated-query.dto';
 
 @Controller('employee')
 export class EmployeeController extends WithAuthGuardController {
@@ -26,16 +30,22 @@ export class EmployeeController extends WithAuthGuardController {
     async create(@Body() createEmployeeDto: CreateEmployeeDto) {
         const employee = await this.employeeService.create(createEmployeeDto);
 
-        return this.wrapResponse(employee);
+        return this.wrapResponse(plainToClass(EmployeeDto, employee));
     }
 
     @Get()
-    async findAll(): Promise<
-        ResponseInterface<PaginatedCollectionDto<EmployeeDto>>
-    > {
-        const result = await this.employeeService.findAll();
+    async findAll(
+        @Query()
+        query: PaginatedQueryDto,
+    ): Promise<ResponseInterface<PaginatedCollectionDto<EmployeeDto>>> {
+        const result = await this.employeeService.findAllPaginated(query.page);
         return this.wrapResponse(
-            new PaginatedCollectionDto<EmployeeDto>(result),
+            new PaginatedCollectionDto<EmployeeDto>({
+                ...result,
+                items: result.items.map((employee) => {
+                    return plainToClass(EmployeeDto, employee);
+                }),
+            }),
         );
     }
 
@@ -64,7 +74,7 @@ export class EmployeeController extends WithAuthGuardController {
                 Number(id),
                 updateEmployeeDto,
             );
-            return this.wrapResponse(result);
+            return this.wrapResponse(plainToClass(EmployeeDto, result));
         } catch (e) {
             if (e instanceof ApiServiceException) {
                 const err = e as ApiServiceException;
