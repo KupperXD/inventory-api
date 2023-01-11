@@ -19,7 +19,17 @@ import JwtRefreshGuard from '../guards/jwt-refresh.guard';
 import { UsersService } from '../../users/service/users.service';
 import ApiController from '../../../http/controllers/api.controller';
 import ApiServiceException from '../../../exceptions/api-service.exception';
+import {
+    ApiOperation,
+    ApiBearerAuth,
+    ApiTags,
+    getSchemaPath,
+    ApiExtraModels,
+    ApiOkResponse,
+} from '@nestjs/swagger';
+import {EntityNotFoundErrorDto} from "../../../http/dto/errors/entity-not-found-error.dto";
 
+@ApiTags('Авторизация')
 @Controller('auth')
 export class AuthController extends ApiController {
     constructor(
@@ -29,6 +39,10 @@ export class AuthController extends ApiController {
         super();
     }
 
+    @ApiOperation({
+        summary: 'вход в систему',
+        description: 'Отправляем логин/почту для получения токенов авторизации',
+    })
     @Post('log-in')
     @HttpCode(200)
     async logIn(
@@ -58,6 +72,10 @@ export class AuthController extends ApiController {
         }
     }
 
+    @ApiOperation({
+        summary: 'выход из системы',
+        description: 'Удаляет токены',
+    })
     @UseGuards(JwtAuthenticationGuard)
     @Post('log-out')
     @HttpCode(200)
@@ -69,6 +87,10 @@ export class AuthController extends ApiController {
         return this.wrapResponse({ success: true });
     }
 
+    @ApiOperation({
+        summary: 'получения нового access токена',
+        description: 'Запрос на получение нового access токена',
+    })
     @UseGuards(JwtRefreshGuard)
     @Get('refresh')
     async refresh(@Req() request: RequestWithUser, @Res() response: Response) {
@@ -85,6 +107,37 @@ export class AuthController extends ApiController {
         );
     }
 
+    @ApiBearerAuth()
+    @ApiOperation({
+        summary: 'текущий пользователь',
+        description: 'Запрос на получение нового access токена',
+    })
+    @ApiExtraModels(UserWithoutPasswordDto)
+    @ApiExtraModels(EntityNotFoundErrorDto)
+    @ApiOkResponse({
+        schema: {
+            oneOf: [
+                {
+                    description: 'Пользователь',
+                    properties: {
+                        response: {
+                            type: 'object',
+                            $ref: getSchemaPath(UserWithoutPasswordDto),
+                        },
+                    },
+                },
+                {
+                    description: 'Ошибка',
+                    properties: {
+                        error: {
+                            type: 'object',
+                            $ref: getSchemaPath(EntityNotFoundErrorDto),
+                        },
+                    },
+                },
+            ],
+        },
+    })
     @UseGuards(JwtAuthenticationGuard)
     @Get('current-user')
     @HttpCode(200)
