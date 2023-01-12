@@ -14,7 +14,7 @@ export class AuthService {
     constructor(
         private userService: UsersService,
         private jwtService: JwtService,
-        private configService: ConfigService,
+        private configService: ConfigService<EnvironmentVariablesInterface>,
     ) {}
 
     public getCookieWithJwtToken(userId: number) {
@@ -23,7 +23,7 @@ export class AuthService {
 
         return {
             cookie: `Authentication=${token}; Path=/; Max-Age=${this.configService.get(
-                'jwt_access_expiration_time',
+                'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
             )}`,
         };
     }
@@ -31,13 +31,15 @@ export class AuthService {
     public getCookieWithJwtRefreshToken(userId: number) {
         const payload: TokenPayload = { userId };
         const token = this.jwtService.sign(payload, {
-            secret: this.configService.get('jwt_refresh_secret'),
-            expiresIn: this.configService.get('jwt_refresh_expiration_time'),
+            secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+            expiresIn: this.configService.get(
+                'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+            ),
         });
 
         return {
             cookie: `Refresh=${token}; Path=/; Max-Age=${this.configService.get(
-                'jwt_refresh_expiration_time',
+                'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
             )}`,
             token,
         };

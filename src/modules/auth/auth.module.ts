@@ -16,12 +16,14 @@ import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => {
+            useFactory: async (
+                configService: ConfigService<EnvironmentVariablesInterface>,
+            ) => {
                 return {
-                    secret: configService.get('jwt_access_secret'),
+                    secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
                     signOptions: {
                         expiresIn: `${configService.get(
-                            'jwt_access_expiration_time',
+                            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
                         )}s`,
                     },
                 };

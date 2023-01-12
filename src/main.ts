@@ -10,7 +10,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    const configService = app.get<ConfigService>(ConfigService);
+    const configService = app.get<ConfigService<EnvironmentVariablesInterface>>(
+        ConfigService<EnvironmentVariablesInterface>,
+    );
     app.setGlobalPrefix('api');
     app.use(cookieParser());
     app.useGlobalPipes(
@@ -34,6 +36,6 @@ async function bootstrap() {
     SwaggerModule.setup('api/documentation', app, documentSwagger);
 
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    await app.listen(configService.get('application_port'));
+    await app.listen(configService.get('APPLICATION_PORT'));
 }
 void bootstrap();

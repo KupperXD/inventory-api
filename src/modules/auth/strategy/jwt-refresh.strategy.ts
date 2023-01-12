@@ -12,7 +12,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
     'jwt-refresh-token',
 ) {
     constructor(
-        private readonly configService: ConfigService,
+        private readonly configService: ConfigService<EnvironmentVariablesInterface>,
         private readonly userService: UsersService,
     ) {
         super({
@@ -21,7 +21,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
                     return request?.cookies?.Refresh;
                 },
             ]),
-            secretOrKey: configService.get('jwt_refresh_secret'),
+            secretOrKey: configService.get('JWT_REFRESH_TOKEN_SECRET'),
             passReqToCallback: true,
         });
     }
