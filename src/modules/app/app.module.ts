@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { AppController } from './controllers/app.controller';
 import { AppService } from './service/app.service';
 import { ConfigModule } from '@nestjs/config';
-import configuration from '../config/configuration';
 import { UsersModule } from '../users/users.module';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { EmployeeModule } from '../employee/employee.module';
 import { UniqueConstraintValidator } from '../../validators/unique-constraint.validator';
 import { CreateUserCommand } from 'src/console/create-user.command';
 import * as Joi from 'joi';
+import {LoggerModule} from "../logger/logger.module";
 
 @Module({
     imports: [
@@ -23,12 +23,11 @@ import * as Joi from 'joi';
                 JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
             }),
         }),
-        PrismaModule.forRoot({
-            isGlobal: true,
-        }),
+        PrismaModule,
         UsersModule,
         AuthModule,
         EmployeeModule,
+        LoggerModule,
     ],
     controllers: [AppController],
     providers: [AppService, UniqueConstraintValidator, CreateUserCommand],

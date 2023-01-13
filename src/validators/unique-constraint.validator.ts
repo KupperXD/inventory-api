@@ -1,4 +1,4 @@
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '../modules/prisma/service/prisma.service';
 import {
     ValidatorConstraintInterface,
     ValidatorConstraint,
