@@ -8,6 +8,7 @@ import { useContainer } from 'class-validator';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaService } from './modules/prisma/service/prisma.service';
 import { Logger } from './modules/logger/service/logger.service';
+import { config, Credentials } from 'aws-sdk';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -22,9 +23,15 @@ async function bootstrap() {
         ConfigService<EnvironmentVariablesInterface>,
     );
 
+    config.update({
+        credentials: new Credentials({
+            accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
+            secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+        }),
+    });
+
     const prismaService = app.get(PrismaService);
     await prismaService.enableShutdownHooks(app);
-
     app.setGlobalPrefix('api');
     app.use(cookieParser());
     app.useGlobalPipes(

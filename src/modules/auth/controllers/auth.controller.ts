@@ -27,7 +27,7 @@ import {
     ApiExtraModels,
     ApiOkResponse,
 } from '@nestjs/swagger';
-import {EntityNotFoundErrorDto} from "../../../http/dto/errors/entity-not-found-error.dto";
+import { EntityNotFoundErrorDto } from '../../../http/dto/errors/entity-not-found-error.dto';
 
 @ApiTags('Авторизация')
 @Controller('auth')

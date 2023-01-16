@@ -9,7 +9,10 @@ import { EmployeeModule } from '../employee/employee.module';
 import { UniqueConstraintValidator } from '../../validators/unique-constraint.validator';
 import { CreateUserCommand } from 'src/console/create-user.command';
 import * as Joi from 'joi';
-import {LoggerModule} from "../logger/logger.module";
+import { LoggerModule } from '../logger/logger.module';
+import { StorageModule } from '../storage/storage.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve, join } from 'path';
 
 @Module({
     imports: [
@@ -17,6 +20,7 @@ import {LoggerModule} from "../logger/logger.module";
             isGlobal: true,
             validationSchema: Joi.object({
                 APPLICATION_PORT: Joi.number().default(9090),
+                UPLOADED_FILES_DESTINATION: Joi.string().default('./storage'),
                 JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
                 JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
                 JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
@@ -28,6 +32,7 @@ import {LoggerModule} from "../logger/logger.module";
         AuthModule,
         EmployeeModule,
         LoggerModule,
+        StorageModule,
     ],
     controllers: [AppController],
     providers: [AppService, UniqueConstraintValidator, CreateUserCommand],

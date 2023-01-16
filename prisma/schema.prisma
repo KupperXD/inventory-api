@@ -11,15 +11,24 @@ datasource db {
 }
 
 model User {
-    id                           Int       @default(autoincrement()) @id
-    email                        String    @unique
-    name                         String
-    password                     String
-    currentHashedRefreshToken    String?
+  id                        Int     @id @default(autoincrement())
+  email                     String  @unique
+  name                      String
+  password                  String
+  currentHashedRefreshToken String?
 }
 
 model Employee {
-    id    Int      @default(autoincrement()) @id
-    email String   @unique
-    name  String
+  id    Int    @id @default(autoincrement())
+  email String @unique
+  name  String
+}
+
+model StoredFile {
+  id            Int    @id @default(autoincrement())
+  name          String
+  original_name String
+  mime          String
+  size          BigInt
+  path          String
 }

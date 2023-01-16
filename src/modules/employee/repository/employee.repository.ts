@@ -28,7 +28,6 @@ export class EmployeeRepository extends PaginationRepository<Employee> {
     }
 
     async findOne(id: number): Promise<Employee> {
-        await this.prisma.$queryRaw`SELECT adsds FROM ASDDA`;
         return await this.prisma.employee.findUnique({
             where: {
                 id,
