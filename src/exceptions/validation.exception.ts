@@ -5,17 +5,16 @@ import { ErrorResponseInterface } from '../http/errors/interfaces/error-response
 import { ErrorCode } from '../http/errors/enum/error-code.enum';
 
 export class ValidationException extends HttpException {
-    constructor(errors: ValidationError[]) {
-        super(
-            ValidationException.wrapResponse(
-                ValidationException.transformErrors(errors),
-            ),
-            200,
-        );
+    constructor(entryErrors: ValidationError[] | string) {
+        const errors = Array.isArray(entryErrors)
+            ? ValidationException.transformErrors(entryErrors)
+            : entryErrors;
+
+        super(ValidationException.wrapResponse(errors), 200);
     }
 
     static wrapResponse(
-        errors: ValidationErrorInterface[],
+        errors: ValidationErrorInterface[] | string,
     ): ErrorResponseInterface {
         return {
             error: {

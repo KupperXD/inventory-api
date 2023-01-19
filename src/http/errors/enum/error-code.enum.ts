@@ -6,4 +6,6 @@ export const enum ErrorCode {
     LOGIN_FAILED = 101,
 
     ENTITY_NOT_FOUND = 107,
+
+    S3_UPLOAD_FAIL = 300,
 }

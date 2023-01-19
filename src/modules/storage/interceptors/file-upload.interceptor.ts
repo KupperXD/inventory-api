@@ -1,12 +1,12 @@
 import { Injectable, mixin, NestInterceptor } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { diskStorage } from 'multer';
 
 interface FilesInterceptorOptions {
     fieldName: string;
     path?: string;
+    fileFilter?: MulterOptions['fileFilter'];
+    limits?: MulterOptions['limits'];
 }
 
 function FileUploadInterceptor(options: FilesInterceptorOptions) {
@@ -14,35 +14,11 @@ function FileUploadInterceptor(options: FilesInterceptorOptions) {
     class Interceptor implements NestInterceptor {
         fileInterceptor: NestInterceptor;
 
-        constructor(
-            configService: ConfigService<EnvironmentVariablesInterface>,
-        ) {
-            const filesDestination = configService.get(
-                'UPLOADED_FILES_DESTINATION',
-            );
-
-            const destination = `${filesDestination}${options.path ?? ''}`;
-
-            const multerOptions: MulterOptions = {
-                storage: diskStorage({
-                    destination,
-                    filename(
-                        req: Express.Request,
-                        file: Express.Multer.File,
-                        callback: (
-                            error: Error | null,
-                            filename: string,
-                        ) => void,
-                    ) {
-                        callback(null, file.originalname);
-                    },
-                }),
-            };
-
-            this.fileInterceptor = new (FileInterceptor(
-                options.fieldName,
-                multerOptions,
-            ))();
+        constructor() {
+            this.fileInterceptor = new (FileInterceptor(options.fieldName, {
+                limits: options.limits,
+                fileFilter: options.fileFilter,
+            }))();
         }
 
         intercept(...args: Parameters<NestInterceptor['intercept']>) {

@@ -11,8 +11,6 @@ import { CreateUserCommand } from 'src/console/create-user.command';
 import * as Joi from 'joi';
 import { LoggerModule } from '../logger/logger.module';
 import { StorageModule } from '../storage/storage.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { resolve, join } from 'path';
 
 @Module({
     imports: [
@@ -25,6 +23,10 @@ import { resolve, join } from 'path';
                 JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
                 JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
                 JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+                AWS_ACCESS_KEY_ID: Joi.string().required(),
+                AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+                AWS_PUBLIC_BUCKET_NAME: Joi.string().required(),
+                AWS_REGION: Joi.string().required(),
             }),
         }),
         PrismaModule,
