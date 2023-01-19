@@ -3,7 +3,7 @@ import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmployeeDto } from '../dto/update-employee.dto';
 import ApiServiceException from '../../../exceptions/api-service.exception';
 import EntityNotFoundError from '../../../http/errors/entity-not-found.error';
-import { EmployeeRepository } from '../repository/employee.repository';
+import { EmployeeRepository } from '../repositories/employee.repository';
 
 @Injectable()
 export class EmployeeService {

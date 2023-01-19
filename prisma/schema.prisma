@@ -19,16 +19,35 @@ model User {
 }
 
 model Employee {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  name          String
+  InventoryItem InventoryItem[]
 }
 
 model StoredFile {
-  id            Int    @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   name          String
   original_name String
   mime          String
   size          BigInt
   path          String
+  InventoryItem InventoryItem[]
+}
+
+model InventoryItem {
+  id            Int                @id @default(autoincrement())
+  name          String
+  type          InventoryItemTypes
+  employee      Employee?          @relation(fields: [employeeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  employeeId    Int?
+  photo         StoredFile?        @relation(fields: [photoId], references: [id], onDelete: SetNull)
+  photoId       Int?
+  specification Json[]             @db.JsonB
+}
+
+enum InventoryItemTypes {
+  Computer
+  Furniture
+  Periphery
 }

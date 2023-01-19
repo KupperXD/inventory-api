@@ -11,6 +11,8 @@ import { CreateUserCommand } from 'src/console/create-user.command';
 import * as Joi from 'joi';
 import { LoggerModule } from '../logger/logger.module';
 import { StorageModule } from '../storage/storage.module';
+import { InventoryItemModule } from '../inventory-item/inventory-item.module';
+import { ExistsEntityValidator } from '../../validators/exists-entity.validator';
 
 @Module({
     imports: [
@@ -35,8 +37,14 @@ import { StorageModule } from '../storage/storage.module';
         EmployeeModule,
         LoggerModule,
         StorageModule,
+        InventoryItemModule,
     ],
     controllers: [AppController],
-    providers: [AppService, UniqueConstraintValidator, CreateUserCommand],
+    providers: [
+        AppService,
+        UniqueConstraintValidator,
+        CreateUserCommand,
+        ExistsEntityValidator,
+    ],
 })
 export class AppModule {}

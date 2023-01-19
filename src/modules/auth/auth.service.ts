@@ -8,6 +8,7 @@ import LoginDto from './dto/login.dto';
 import { UserDto } from '../users/dto/user.dto';
 import ApiServiceException from '../../exceptions/api-service.exception';
 import LoginFailedError from './errors/login-failed.error';
+import { EnvironmentVariablesInterface } from '../../interfaces/enviroment-variables.interface';
 
 @Injectable()
 export class AuthService {

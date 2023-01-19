@@ -12,7 +12,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private configService: ConfigService,
         private userService: UsersService,
     ) {
-        console.log(configService);
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request: Request) => {

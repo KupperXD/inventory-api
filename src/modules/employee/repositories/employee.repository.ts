@@ -24,7 +24,7 @@ export class EmployeeRepository extends PaginationRepository<Employee> {
             },
         });
 
-        return Promise.resolve(!!employee);
+        return !!employee;
     }
 
     async findOne(id: number): Promise<Employee> {
@@ -41,12 +41,6 @@ export class EmployeeRepository extends PaginationRepository<Employee> {
                 id,
             },
             data: dto,
-        });
-    }
-
-    async findAll(options?: Prisma.EmployeeWhereInput): Promise<Employee[]> {
-        return this.prisma.employee.findMany({
-            where: options,
         });
     }
 }

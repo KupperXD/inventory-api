@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './controllers/auth.controller';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
+import { EnvironmentVariablesInterface } from '../../interfaces/enviroment-variables.interface';
 
 @Module({
     controllers: [AuthController],

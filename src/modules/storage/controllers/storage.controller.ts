@@ -27,10 +27,9 @@ import {
 import { FileExtensionValidator } from '../pipes/parse-file.validator';
 import { FileValidationException } from '../exceptions/file-validation.exception';
 import { ErrorDto } from 'src/http/dto/errors/error.dto';
-import { ErrorResponseInterface } from '../../../http/errors/interfaces/error-response.interface';
 
-@Controller('Хранилище')
-@ApiTags('storage')
+@Controller('storage')
+@ApiTags('Хранилище')
 export class StorageController extends ApiController {
     constructor(private readonly storageService: StorageService) {
         super();
