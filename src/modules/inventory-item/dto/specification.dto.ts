@@ -10,6 +10,10 @@ export class SpecificationDto {
     @IsNotEmpty()
     public label: string;
 
+    @ApiProperty({
+        description: 'Описание атрибута',
+        type: 'string',
+    })
     @IsString()
     @IsNotEmpty()
     public value: string;

@@ -1,3 +1,7 @@
-import { InventoryItemTypes } from '@prisma/client';
+export const InventoryItemTypesEnum = {
+    COMPUTER: 'Computer',
+    FURNITURE: 'Furniture',
+    PERIPHERY: 'Periphery',
+};
 
-export const InventoryItemTypesEnum = InventoryItemTypes;
+export type InventoryItemTypesEnumType = 'Computer' | 'Furniture' | 'Periphery';

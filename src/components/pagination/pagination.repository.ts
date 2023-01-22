@@ -2,10 +2,14 @@ import { BaseRepository } from '../base.repository';
 import { PaginateModelInterface } from './interface/paginate-model.interface';
 import { PaginateResultInterface } from '../../interfaces/pagination/paginate-result.interface';
 
+type IncludesOptions = {
+    include?: unknown;
+};
+
 type PaginatedOptions = {
     page: number;
     perPage: number;
-};
+} & IncludesOptions;
 
 export abstract class PaginationRepository<T> extends BaseRepository<T> {
     private _modelWithPagination: PaginateModelInterface<T>;
@@ -36,6 +40,7 @@ export abstract class PaginationRepository<T> extends BaseRepository<T> {
             model.findMany({
                 take: options.perPage,
                 skip,
+                include: options.include,
             }),
         ]);
 

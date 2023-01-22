@@ -40,9 +40,6 @@ export class EmployeeService {
         try {
             await this.employeeRepository.delete(id);
         } catch (e) {
-            console.log('error delete', {
-                e,
-            });
             throw new ApiServiceException(new EntityNotFoundError());
         }
     }

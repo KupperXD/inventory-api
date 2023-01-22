@@ -1,5 +1,6 @@
 import { ErrorResponseInterface } from '../errors/interfaces/error-response.interface';
 import ApiError from '../errors/api.error';
+import ApiException from "../../exceptions/api.exception";
 
 export default abstract class ApiController {
     protected wrapResponse<T>(response: T): ResponseInterface<T> {
@@ -15,5 +16,9 @@ export default abstract class ApiController {
                 data: error.getMessage(),
             },
         };
+    }
+
+    protected isExceptionApi(error: unknown): error is ApiException {
+        return error instanceof ApiException;
     }
 }
