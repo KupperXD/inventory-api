@@ -9,6 +9,7 @@ import { UpdateInventoryItemDto } from '../dto/update-inventory-item.dto';
 import EntityNotFoundError from '../../../http/errors/entity-not-found.error';
 import { plainToInstance } from 'class-transformer';
 import { InventoryItemWithRelationsType } from '../models/inventory-item-with-relations.type';
+import { RepositoryException } from '../../../exceptions/repository.exception';
 
 @Injectable()
 export class InventoryItemService {
@@ -57,13 +58,19 @@ export class InventoryItemService {
                 updateInventoryItemDto,
             );
         } catch (e) {
-            throw new ApiServiceException(
-                new UnknownError('Не удалось обновить сущность'),
-            );
+            if (e instanceof RepositoryException) {
+                throw new ApiServiceException(e.getApiError());
+            }
+
+            throw e;
         }
     }
 
     async findOne(id: number) {
+        if (Number.isNaN(id)) {
+            throw new ApiServiceException(new EntityNotFoundError());
+        }
+
         const inventoryItem = await this.inventoryItemRepository.findOne(id);
 
         if (!inventoryItem) {
@@ -77,7 +84,11 @@ export class InventoryItemService {
         try {
             return await this.inventoryItemRepository.delete(id);
         } catch (e) {
-            throw new ApiServiceException(new EntityNotFoundError());
+            if (e instanceof RepositoryException) {
+                return Promise.reject(new ApiServiceException(e.getApiError()));
+            }
+
+            throw e;
         }
     }
 }

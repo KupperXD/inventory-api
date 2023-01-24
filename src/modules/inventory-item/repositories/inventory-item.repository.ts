@@ -9,6 +9,9 @@ import { RepositoryException } from '../../../exceptions/repository.exception';
 import UnknownError from '../../../http/errors/unknown.error';
 import { InventoryItemWithRelationsType } from '../models/inventory-item-with-relations.type';
 import { PaginateResultInterface } from '../../../interfaces/pagination/paginate-result.interface';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { PrismaError } from '../../../enums/prismaError';
+import EntityNotFoundError from '../../../http/errors/entity-not-found.error';
 
 @Injectable()
 export class InventoryItemRepository extends PaginationRepository<
@@ -39,7 +42,9 @@ export class InventoryItemRepository extends PaginationRepository<
                 },
             });
         } catch (e) {
-            await this.handleErrorAndThrow(e);
+            await this.handleError(e);
+
+            throw e;
         }
     }
 
@@ -53,7 +58,17 @@ export class InventoryItemRepository extends PaginationRepository<
 
             return !!inventoryItem;
         } catch (e) {
-            await this.handleErrorAndThrow(e);
+            if (
+                e instanceof PrismaClientKnownRequestError &&
+                e.code === PrismaError.NOT_FOUND
+            ) {
+                return Promise.reject(
+                    new RepositoryException(new EntityNotFoundError()),
+                );
+            }
+
+            await this.handleError(e);
+            throw e;
         }
     }
 
@@ -69,7 +84,9 @@ export class InventoryItemRepository extends PaginationRepository<
                 },
             });
         } catch (e) {
-            await this.handleErrorAndThrow(e);
+            await this.handleError(e);
+
+            throw e;
         }
     }
 
@@ -94,7 +111,17 @@ export class InventoryItemRepository extends PaginationRepository<
                 },
             });
         } catch (e) {
-            await this.handleErrorAndThrow(e);
+            if (
+                e instanceof PrismaClientKnownRequestError &&
+                e.code === PrismaError.NOT_FOUND
+            ) {
+                return Promise.reject(
+                    new RepositoryException(new EntityNotFoundError()),
+                );
+            }
+
+            await this.handleError(e);
+            throw e;
         }
     }
 
@@ -110,8 +137,7 @@ export class InventoryItemRepository extends PaginationRepository<
         })) as PaginateResultInterface<InventoryItemWithRelationsType>;
     }
 
-    private async handleErrorAndThrow(error: unknown): Promise<void> {
+    private async handleError(error: unknown): Promise<void> {
         this.logger.error(error?.toString());
-        throw new RepositoryException(new UnknownError(error.toString()));
     }
 }

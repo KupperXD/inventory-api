@@ -11,7 +11,10 @@ import { SpecificationDto } from './specification.dto';
 import { Type } from 'class-transformer';
 import { ExistEntity } from '../../../validators/exists-entity.validator';
 import { ApiProperty } from '@nestjs/swagger';
-import {InventoryItemTypesEnum, InventoryItemTypesEnumType} from '../enums/inventoryItemTypes.enum';
+import {
+    InventoryItemTypesEnum,
+    InventoryItemTypesEnumType,
+} from '../enums/inventoryItemTypes.enum';
 
 export class CreateInventoryItemDto {
     @ApiProperty({

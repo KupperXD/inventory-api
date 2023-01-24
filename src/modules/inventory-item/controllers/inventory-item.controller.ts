@@ -1,6 +1,16 @@
-import ApiController from '../../../http/controllers/api.controller';
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+} from '@nestjs/common';
+import {
+    ApiBody,
     ApiExtraModels,
     ApiOkResponse,
     ApiOperation,
@@ -13,10 +23,14 @@ import { InventoryItemOutDto } from '../dto/inventory-item-out.dto';
 import { PaginatedQueryDto } from '../../../http/dto/paginated-query.dto';
 import { PaginatedCollectionDto } from '../../../http/dto/paginated-collection.dto';
 import { ApiOkResponsePaginatedDecorator } from '../../../decorators/api-ok-response-paginated.decorator';
-import ApiServiceException from '../../../exceptions/api-service.exception';
+import { ErrorDto } from '../../../http/dto/errors/error.dto';
+import { UpdateInventoryItemDto } from '../dto/update-inventory-item.dto';
+import { SuccessDto } from '../../../http/dto/success.dto';
+import { WithAuthGuardController } from '../../../http/controllers/with-auth-guard.controller';
+
 @Controller('inventory-item')
 @ApiTags('Имущество')
-export class InventoryItemController extends ApiController {
+export class InventoryItemController extends WithAuthGuardController {
     constructor(private readonly inventoryItemService: InventoryItemService) {
         super();
     }
@@ -83,13 +97,24 @@ export class InventoryItemController extends ApiController {
         summary: 'Получить детальную имущества',
         description: 'Запрос по получению детальной информации',
     })
+    @ApiExtraModels(ErrorDto)
     @ApiOkResponse({
         schema: {
             oneOf: [
                 {
+                    description: 'Модель',
                     properties: {
                         response: {
                             $ref: getSchemaPath(InventoryItemOutDto),
+                        },
+                    },
+                },
+                {
+                    description: 'Сущность не найдена',
+                    properties: {
+                        error: {
+                            type: 'object',
+                            $ref: getSchemaPath(ErrorDto),
                         },
                     },
                 },
@@ -97,14 +122,100 @@ export class InventoryItemController extends ApiController {
         },
     })
     @Get(':id')
-    async findOne(@Param('id') id: string) {
+    async findOne(@Param('id', ParseIntPipe) id: string) {
         try {
             const result = await this.inventoryItemService.findOne(Number(id));
 
             return this.wrapResponse(new InventoryItemOutDto(result));
         } catch (e) {
-            if (e instanceof ApiServiceException) {
-                return this.wrapResponse(e.getApiError());
+            if (this.isExceptionApi(e)) {
+                return this.wrapError(e.getApiError());
+            }
+
+            throw e;
+        }
+    }
+
+    @ApiOperation({
+        summary: 'Обновить имущество',
+        description:
+            'Запроса для обновления имущества, обновляются только те поля которые отправлены',
+    })
+    @ApiExtraModels(InventoryItemOutDto, ErrorDto, CreateInventoryItemDto)
+    @ApiBody({
+        schema: {
+            type: 'object',
+            $ref: getSchemaPath(CreateInventoryItemDto),
+        },
+    })
+    @ApiOkResponse({
+        schema: {
+            oneOf: [
+                {
+                    properties: {
+                        response: {
+                            type: 'object',
+                            $ref: getSchemaPath(InventoryItemOutDto),
+                        },
+                    },
+                },
+                {
+                    properties: {
+                        error: {
+                            type: 'object',
+                            $ref: getSchemaPath(ErrorDto),
+                        },
+                    },
+                },
+            ],
+        },
+    })
+    @Patch(':id')
+    async update(
+        @Param('id', ParseIntPipe) id: string,
+        @Body() updateInventoryItemDto: UpdateInventoryItemDto,
+    ) {
+        try {
+            const result = await this.inventoryItemService.update(
+                Number(id),
+                updateInventoryItemDto,
+            );
+
+            return this.wrapResponse(new InventoryItemOutDto(result));
+        } catch (e) {
+            if (this.isExceptionApi(e)) {
+                return this.wrapError(e.getApiError());
+            }
+
+            throw e;
+        }
+    }
+
+    @ApiOperation({
+        summary: 'Удалить элемент имущества',
+        description: 'Запрос на удаления имущества',
+    })
+    @ApiExtraModels(SuccessDto)
+    @ApiOkResponse({
+        schema: {
+            properties: {
+                response: {
+                    type: 'object',
+                    $ref: getSchemaPath(SuccessDto),
+                    example: true,
+                },
+            },
+        },
+    })
+    @Delete(':id')
+    async remove(@Param('id', ParseIntPipe) id: string) {
+        try {
+            await this.inventoryItemService.remove(Number(id));
+
+            return this.wrapResponse(new SuccessDto(true));
+        } catch (e) {
+            if (this.isExceptionApi(e)) {
+                return this.wrapError(e.getApiError());
             }
 
             throw e;
