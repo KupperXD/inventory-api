@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Employee } from '@prisma/client';
 
 export class EmployeeDto {
     @ApiProperty({
@@ -21,4 +22,10 @@ export class EmployeeDto {
         example: 'Дима',
     })
     name: string;
+
+    constructor(employee: Employee) {
+        this.name = employee.name;
+        this.email = employee.email;
+        this.id = employee.id;
+    }
 }

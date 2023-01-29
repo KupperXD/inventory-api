@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InventoryItemRepository } from '../repositories/inventory-item.repository';
-import { InventoryItem } from '@prisma/client';
 import ApiServiceException from '../../../exceptions/api-service.exception';
 import UnknownError from '../../../http/errors/unknown.error';
 import { CreateInventoryItemDto } from '../dto/create-inventory-item.dto';
@@ -27,9 +26,11 @@ export class InventoryItemService {
                 plainToInstance(CreateInventoryItemDto, createInventoryItemDto),
             );
         } catch (e) {
-            throw new ApiServiceException(
-                new UnknownError('Не удалось создать сущность.'),
-            );
+            if (e instanceof RepositoryException) {
+                return Promise.reject(new ApiServiceException(e.getApiError()));
+            }
+
+            throw e;
         }
     }
 
@@ -42,9 +43,15 @@ export class InventoryItemService {
                 perPage: this.PER_PAGE,
             });
         } catch (e) {
-            throw new ApiServiceException(
-                new UnknownError('Не удалось получить список элементов'),
-            );
+            if (e instanceof RepositoryException) {
+                return Promise.reject(
+                    new ApiServiceException(
+                        new UnknownError(
+                            'Не удалось получить список элементов',
+                        ),
+                    ),
+                );
+            }
         }
     }
 

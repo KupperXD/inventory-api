@@ -6,7 +6,6 @@ import { CreateInventoryItemDto } from '../dto/create-inventory-item.dto';
 import { Logger } from '../../logger/service/logger.service';
 import { UpdateInventoryItemDto } from '../dto/update-inventory-item.dto';
 import { RepositoryException } from '../../../exceptions/repository.exception';
-import UnknownError from '../../../http/errors/unknown.error';
 import { InventoryItemWithRelationsType } from '../models/inventory-item-with-relations.type';
 import { PaginateResultInterface } from '../../../interfaces/pagination/paginate-result.interface';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';

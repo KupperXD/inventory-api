@@ -21,9 +21,6 @@ export class StorageRepository
                 data: dto,
             });
         } catch (e) {
-            console.log('prisma error', {
-                e,
-            });
             this.handleError(e);
             throw e;
         }

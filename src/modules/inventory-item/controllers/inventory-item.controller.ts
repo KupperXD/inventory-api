@@ -22,7 +22,7 @@ import { InventoryItemService } from '../services/inventory-item.service';
 import { InventoryItemOutDto } from '../dto/inventory-item-out.dto';
 import { PaginatedQueryDto } from '../../../http/dto/paginated-query.dto';
 import { PaginatedCollectionDto } from '../../../http/dto/paginated-collection.dto';
-import { ApiOkResponsePaginatedDecorator } from '../../../decorators/api-ok-response-paginated.decorator';
+import { ApiOkResponsePaginatedDecorator } from '../../../http/decorators/api-ok-response-paginated.decorator';
 import { ErrorDto } from '../../../http/dto/errors/error.dto';
 import { UpdateInventoryItemDto } from '../dto/update-inventory-item.dto';
 import { SuccessDto } from '../../../http/dto/success.dto';
@@ -36,13 +36,13 @@ export class InventoryItemController extends WithAuthGuardController {
     }
 
     @ApiOperation({
-        summary: 'Создания элемента имущества',
-        description: 'Создания элемента имущества',
+        summary: 'Создание элемента имущества',
+        description: 'Создание элемента имущества',
     })
     @ApiExtraModels(InventoryItemOutDto)
     @ApiOkResponse({
         schema: {
-            description: 'Успешное создание',
+            description: 'Успех',
             properties: {
                 response: {
                     type: 'object',

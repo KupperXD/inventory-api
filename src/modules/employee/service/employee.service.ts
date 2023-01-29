@@ -4,6 +4,7 @@ import { UpdateEmployeeDto } from '../dto/update-employee.dto';
 import ApiServiceException from '../../../exceptions/api-service.exception';
 import EntityNotFoundError from '../../../http/errors/entity-not-found.error';
 import { EmployeeRepository } from '../repositories/employee.repository';
+import { RepositoryException } from '../../../exceptions/repository.exception';
 
 @Injectable()
 export class EmployeeService {
@@ -12,7 +13,15 @@ export class EmployeeService {
     constructor(private readonly employeeRepository: EmployeeRepository) {}
 
     async create(createEmployeeDto: CreateEmployeeDto) {
-        return await this.employeeRepository.create(createEmployeeDto);
+        try {
+            return await this.employeeRepository.create(createEmployeeDto);
+        } catch (e) {
+            if (e instanceof RepositoryException) {
+                return Promise.reject(new ApiServiceException(e.getApiError()));
+            }
+
+            throw e;
+        }
     }
 
     async findAllPaginated(page: number) {
@@ -33,14 +42,26 @@ export class EmployeeService {
     }
 
     async update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
-        return await this.employeeRepository.update(id, updateEmployeeDto);
+        try {
+            return await this.employeeRepository.update(id, updateEmployeeDto);
+        } catch (e) {
+            if (e instanceof RepositoryException) {
+                return Promise.reject(new ApiServiceException(e.getApiError()));
+            }
+
+            throw e;
+        }
     }
 
     async remove(id: number) {
         try {
             await this.employeeRepository.delete(id);
         } catch (e) {
-            throw new ApiServiceException(new EntityNotFoundError());
+            if (e instanceof RepositoryException) {
+                return Promise.reject(new ApiServiceException(e.getApiError()));
+            }
+
+            throw e;
         }
     }
 }
