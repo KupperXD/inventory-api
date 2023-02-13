@@ -76,7 +76,7 @@ export class AuthController extends ApiController {
         summary: 'выход из системы',
         description: 'Удаляет токены',
     })
-    @UseGuards(JwtAuthenticationGuard)
+    @UseGuards(JwtRefreshGuard)
     @Post('log-out')
     @HttpCode(200)
     async logOut(@Req() request: RequestWithUser) {
