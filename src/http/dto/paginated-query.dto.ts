@@ -13,5 +13,5 @@ export class PaginatedQueryDto {
     @IsOptional()
     @Type(() => Number)
     @Min(1)
-    public page: number;
+    public page: number = 1;
 }
