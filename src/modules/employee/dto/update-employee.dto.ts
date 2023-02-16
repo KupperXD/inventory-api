@@ -1,6 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { CreateEmployeeDto } from './create-employee.dto';
-import { ApiExtraModels } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 @ApiExtraModels(CreateEmployeeDto)
-export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {}
+export class UpdateEmployeeDto extends CreateEmployeeDto {
+    @ApiProperty({
+        type: Number,
+        description: 'id сущности',
+        example: 1,
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    public id: number;
+}

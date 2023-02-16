@@ -8,7 +8,7 @@ export class CreateEmployeeDto {
         description: 'Уникальный email сотрудника',
         example: 'email@email.com',
     })
-    @Unique(['employee', 'email'])
+    @Unique(['employee', 'email', 'id'])
     @IsEmail()
     @IsNotEmpty()
     public email: string;

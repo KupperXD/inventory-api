@@ -121,11 +121,11 @@ export class EmployeeController extends WithAuthGuardController {
         description:
             'Запрос для обновления сотрудника, обновляются только те поля которые отправлены',
     })
-    @ApiExtraModels(CreateEmployeeDto)
+    @ApiExtraModels(UpdateEmployeeDto)
     @ApiBody({
         schema: {
             type: 'object',
-            $ref: getSchemaPath(CreateEmployeeDto),
+            $ref: getSchemaPath(UpdateEmployeeDto),
         },
     })
     @ApiOkResponseWithErrorDecorator(EmployeeDto)
