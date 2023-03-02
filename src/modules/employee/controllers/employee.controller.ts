@@ -78,7 +78,7 @@ export class EmployeeController extends WithAuthGuardController {
     @ApiExtraModels(PaginatedCollectionDto)
     @ApiOkResponsePaginatedDecorator(EmployeeDto)
     @Get()
-    async findAll(
+    async paginate(
         @Query()
         query: PaginatedQueryDto,
     ): Promise<ResponseInterface<PaginatedCollectionDto<EmployeeDto>>> {
@@ -91,6 +91,36 @@ export class EmployeeController extends WithAuthGuardController {
                 }),
             }),
         );
+    }
+
+    @ApiOperation({
+        summary: 'Список сотрудников без пагинации',
+        description: 'Получить полный список сотрудников',
+    })
+    @Get('/all')
+    @ApiExtraModels(EmployeeDto)
+    @ApiOkResponse({
+        schema: {
+            allOf: [
+                {
+                    properties: {
+                        items: {
+                            type: 'array',
+                            items: {
+                                $ref: getSchemaPath(EmployeeDto),
+                            },
+                        },
+                    },
+                },
+            ],
+        },
+    })
+    async findMany() {
+        const employees = await this.employeeService.findMany();
+
+        return this.wrapResponse({
+            items: employees.map((employee) => new EmployeeDto(employee)),
+        });
     }
 
     @ApiOperation({

@@ -69,6 +69,16 @@ export class EmployeeRepository extends PaginationRepository<Employee> {
         }
     }
 
+    async findAll(): Promise<Employee[]> {
+        try {
+            return await this.prisma.employee.findMany();
+        } catch (e) {
+            await this.handleError(e);
+
+            throw e;
+        }
+    }
+
     async update(id: number, dto: UpdateEmployeeDto): Promise<Employee> {
         try {
             return await this.prisma.employee.update({

@@ -12,7 +12,7 @@ import { RepositoryException } from '../../../exceptions/repository.exception';
 
 @Injectable()
 export class InventoryItemService {
-    private readonly PER_PAGE = 20;
+    private readonly PER_PAGE = 5;
 
     constructor(
         private readonly inventoryItemRepository: InventoryItemRepository,

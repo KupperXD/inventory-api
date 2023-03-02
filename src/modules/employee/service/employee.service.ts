@@ -53,6 +53,18 @@ export class EmployeeService {
         }
     }
 
+    async findMany() {
+        try {
+            return await this.employeeRepository.findAll();
+        } catch (e) {
+            if (e instanceof RepositoryException) {
+                return Promise.reject(new ApiServiceException(e.getApiError()));
+            }
+
+            throw e;
+        }
+    }
+
     async remove(id: number) {
         try {
             await this.employeeRepository.delete(id);
