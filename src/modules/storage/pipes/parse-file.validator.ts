@@ -14,10 +14,6 @@ export class FileExtensionValidator extends FileValidator<ValidationOptions> {
     isValid(file?: Express.Multer.File): boolean | Promise<boolean> {
         const ext = path.extname(file.originalname).toLowerCase();
 
-        console.log('is valid', {
-            ext,
-        });
-
         return this.validationOptions.allowedMimeType.includes(ext);
     }
 

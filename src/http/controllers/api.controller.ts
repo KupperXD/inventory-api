@@ -10,7 +10,6 @@ export default abstract class ApiController {
     }
 
     protected wrapError(error: ApiError): ErrorResponseInterface {
-        console.log('wrap error');
         return {
             error: {
                 code: error.getCode(),
