@@ -8,6 +8,30 @@ jobs:
    runs-on: ubuntu-latest
    steps:
       -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Create .env
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_POSTGRES_USER: 'svk-inventory'
+          envkey_POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          envkey_POSTGRES_DB: 'svk-inventory'
+          envkey_POSTGRES_PORT: '5432'
+          envkey_APPLICATION_PORT: '9090'
+          envkey_DB_URL: 'postgresql://svk-inventory:${{secrets.DB_PASSWORD}}@svk-inventory_postgres:5432/svk-inventory?schema=public'
+          envkey_JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+          envkey_JWT_ACCESS_TOKEN_EXPIRATION_TIME: ''
+          envkey_JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+          envkey_JWT_REFRESH_TOKEN_EXPIRATION_TIME: ''
+          envkey_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          envkey_AWS_PUBLIC_BUCKET_NAME: ''
+          envkey_AWS_ENDPOINT_URL: ''
+          envkey_AWS_REGION: ''
+          envkey_UPLOADED_FILES_DESTINATION: ''
+          file_name: .env
+      -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       -
@@ -25,4 +49,4 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKER_NAME }}/svk-inventory-api:latest,${{ secrets.DOCKER_NAME }}/svk-inventory-api:${{ github.sha }}
-   
+
