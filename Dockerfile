@@ -14,6 +14,9 @@ RUN npm run build
 FROM node:16-alpine as build
 
 WORKDIR /app
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl1.1-compat-dev
+
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
