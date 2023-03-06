@@ -4,10 +4,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-RUN npm install \
-    && npm run prisma:generate
+RUN npm install
 COPY . .
-
+RUN npm run prisma:generate
 RUN npm run build
 
 FROM node:16-alpine as build
