@@ -1,4 +1,6 @@
 FROM node:16-alpine AS builder
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl1.1-compat-dev
 
 WORKDIR /app
 COPY package*.json ./
