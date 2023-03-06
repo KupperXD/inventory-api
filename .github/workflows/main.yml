@@ -20,10 +20,10 @@ jobs:
           echo POSTGRES_PORT="5432" >> .env
           echo APPLICATION_PORT="9090" >> .env
           echo DB_URL="postgresql://svk-inventory:${{secrets.DB_PASSWORD}}@svk-inventory_postgres:5432/svk-inventory?schema=public" >> .env
-          echo JWT_ACCESS_TOKEN_SECRE="${{ secrets.JWT_ACCESS_TOKEN_SECRET }}" >> .env
+          echo JWT_ACCESS_TOKEN_SECRET="${{ secrets.JWT_ACCESS_TOKEN_SECRET }}" >> .env
           echo JWT_ACCESS_TOKEN_EXPIRATION_TIME="36000" >> .env
           echo JWT_REFRESH_TOKEN_SECRET="${{ secrets.JWT_REFRESH_TOKEN_SECRET }}" >> .env
-          echo envkey_JWT_REFRESH_TOKEN_EXPIRATION_TIME="99999999" >> .env
+          echo JWT_REFRESH_TOKEN_EXPIRATION_TIME="99999999" >> .env
           echo AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
           echo AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
           echo AWS_PUBLIC_BUCKET_NAME="123" >> .env
