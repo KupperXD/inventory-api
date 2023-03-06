@@ -11,30 +11,26 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
       -
-        name: My-step
-        run: |
-          echo $(ls -la)
-      -
         name: Create .env
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-          envkey_POSTGRES_USER: 'svk-inventory'
-          envkey_POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          envkey_POSTGRES_DB: 'svk-inventory'
-          envkey_POSTGRES_PORT: '5432'
-          envkey_APPLICATION_PORT: '9090'
-          envkey_DB_URL: 'postgresql://svk-inventory:${{secrets.DB_PASSWORD}}@svk-inventory_postgres:5432/svk-inventory?schema=public'
-          envkey_JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
-          envkey_JWT_ACCESS_TOKEN_EXPIRATION_TIME: '36000'
-          envkey_JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
-          envkey_JWT_REFRESH_TOKEN_EXPIRATION_TIME: '99999999'
-          envkey_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          envkey_AWS_PUBLIC_BUCKET_NAME: '123'
-          envkey_AWS_ENDPOINT_URL: '123'
-          envkey_AWS_REGION: '123'
-          envkey_UPLOADED_FILES_DESTINATION: '123'
-          file_name: .env
+        run: |
+          cp .env.example .env
+          echo POSTGRES_USER="svk-inventory" >> .env
+          echo POSTGRES_PASSWORD="${{ secrets.DB_PASSWORD }}" >> .env
+          echo POSTGRES_DB="svk-inventory" >> .env
+          echo POSTGRES_PORT="5432" >> .env
+          echo APPLICATION_PORT="9090" >> .env
+          echo DB_URL="postgresql://svk-inventory:${{secrets.DB_PASSWORD}}@svk-inventory_postgres:5432/svk-inventory?schema=public" >> .env
+          echo JWT_ACCESS_TOKEN_SECRE="${{ secrets.JWT_ACCESS_TOKEN_SECRET }}" >> .env
+          echo JWT_ACCESS_TOKEN_EXPIRATION_TIME="36000" >> .env
+          echo JWT_REFRESH_TOKEN_SECRET="${{ secrets.JWT_REFRESH_TOKEN_SECRET }}" >> .env
+          echo envkey_JWT_REFRESH_TOKEN_EXPIRATION_TIME="99999999" >> .env
+          echo AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo AWS_PUBLIC_BUCKET_NAME="123" >> .env
+          echo AWS_ENDPOINT_URL="123" >> .env
+          echo AWS_REGION="123" >> .env
+          echo UPLOADED_FILES_DESTINATION="svk-inventory" >> .env
+          cat .env
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
