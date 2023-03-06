@@ -5,7 +5,6 @@ RUN apk add --no-cache openssl1.1-compat-dev
 WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
-COPY .env ./
 
 RUN npm install
 COPY . .
